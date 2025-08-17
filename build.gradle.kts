@@ -2,6 +2,7 @@ plugins {
     kotlin("multiplatform") version "1.9.10"
     kotlin("plugin.serialization") version "1.9.10"
     id("org.jetbrains.compose") version "1.5.10"
+    id("com.android.library") version "8.1.4"
 }
 
 group = "org.koorm"
@@ -30,6 +31,15 @@ kotlin {
             }
         }
         binaries.executable()
+    }
+
+    // Android targets
+    androidTarget {
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "1.8"
+            }
+        }
     }
 
     // iOS targets (can be built on macOS with Xcode)
@@ -81,9 +91,15 @@ kotlin {
         // JavaScript/Browser
         val jsMain by getting {
             dependencies {
-                implementation(compose.html.core)
+                implementation(compose.ui)
+                implementation(compose.foundation)
+                implementation(compose.material3)
+                implementation(compose.runtime)
             }
         }
+
+        // Android
+        val androidMain by getting
     }
 }
 
@@ -103,5 +119,19 @@ compose.desktop {
             copyright = "© 2025 OCPD Assistant"
             vendor = "Koorm"
         }
+    }
+}
+
+android {
+    namespace = "org.koorm.ocpd"
+    compileSdk = 34
+
+    defaultConfig {
+        minSdk = 24
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 }

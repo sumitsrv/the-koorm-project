@@ -6,7 +6,19 @@ import org.koorm.ocpd.ui.OCPDAssistantApp
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
-    CanvasBasedWindow(canvasElementId = "ComposeTarget") {
-        OCPDAssistantApp()
+    try {
+        CanvasBasedWindow(
+            canvasElementId = "ComposeTarget",
+            title = "OCPD Assistant"
+        ) {
+            OCPDAssistantApp()
+        }
+    } catch (e: Exception) {
+        console.error("Failed to initialize application:", e.message)
+        // Fallback error handling
+        js("""
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error-message').style.display = 'block';
+        """)
     }
 }
