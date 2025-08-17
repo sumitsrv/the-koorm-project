@@ -1,8 +1,15 @@
+import java.io.File
+import java.util.Properties
+import com.android.build.gradle.LibraryExtension
+import org.gradle.api.JavaVersion
+
 plugins {
     kotlin("multiplatform") version "1.9.10"
     kotlin("plugin.serialization") version "1.9.10"
     id("org.jetbrains.compose") version "1.5.10"
-    id("com.android.library") version "8.1.4"
+    // Apply Android plugin only when SDK is available
+    id("com.android.library") version "8.1.4" apply false
+    id("maven-publish")
 }
 
 group = "org.koorm"
@@ -13,7 +20,27 @@ repositories {
     mavenCentral()
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     gradlePluginPortal()
-}g
+}
+
+// Detect whether an Android SDK is available; if not, skip applying the Android plugin/targets
+val enableAndroid: Boolean by lazy {
+    val envSdk = System.getenv("ANDROID_SDK_ROOT") ?: System.getenv("ANDROID_HOME")
+    if (envSdk != null && File(envSdk).exists()) return@lazy true
+
+    val lp = rootProject.file("local.properties")
+    if (lp.exists()) {
+        val props = Properties().apply { lp.inputStream().use { load(it) } }
+        val sdkDir = props.getProperty("sdk.dir")
+        if (sdkDir != null && File(sdkDir).exists()) return@lazy true
+    }
+    false
+}
+
+if (enableAndroid) {
+    apply(plugin = "com.android.library")
+} else {
+    logger.lifecycle("Android SDK not found; skipping Android plugin and target configuration.")
+}
 
 kotlin {
     // JVM Desktop
@@ -33,11 +60,13 @@ kotlin {
         binaries.executable()
     }
 
-    // Android targets
-    androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "1.8"
+    // Android targets (only if SDK is present)
+    if (enableAndroid) {
+        androidTarget {
+            compilations.all {
+                kotlinOptions {
+                    jvmTarget = "1.8"
+                }
             }
         }
     }
@@ -98,8 +127,10 @@ kotlin {
             }
         }
 
-        // Android
-        val androidMain by getting
+        // Android (only if SDK is present)
+        if (enableAndroid) {
+            val androidMain by getting
+        }
     }
 }
 
@@ -122,16 +153,35 @@ compose.desktop {
     }
 }
 
-android {
-    namespace = "org.koorm.ocpd"
-    compileSdk = 34
+// Configure Android only when SDK is present
+if (enableAndroid) {
+    extensions.configure<LibraryExtension>("android") {
+        namespace = "org.koorm.ocpd"
+        compileSdk = 34
 
-    defaultConfig {
-        minSdk = 24
+        defaultConfig {
+            minSdk = 24
+        }
+
+        compileOptions {
+            sourceCompatibility = JavaVersion.VERSION_1_8
+            targetCompatibility = JavaVersion.VERSION_1_8
+        }
     }
+}
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+publishing {
+    publications {
+        withType<org.gradle.api.publish.maven.MavenPublication>().configureEach {
+            pom {
+                licenses {
+                    license {
+                        name.set("Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International")
+                        url.set("https://creativecommons.org/licenses/by-nc-sa/4.0/")
+                        distribution.set("repo")
+                    }
+                }
+            }
+        }
     }
 }
