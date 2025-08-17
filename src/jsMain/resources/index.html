@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCPD Assistant - Your Compassionate Productivity Companion</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        #loading {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+            text-align: center;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid white;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin: 10px 0;
+        }
+
+        #ComposeTarget {
+            width: 100%;
+            height: 100vh;
+            display: none;
+        }
+
+        .feature-list {
+            text-align: left;
+            margin: 20px 0;
+            max-width: 600px;
+        }
+
+        .feature-list li {
+            margin: 10px 0;
+            padding: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">
+        <div class="spinner"></div>
+        <h1>🧠 OCPD Assistant</h1>
+        <p>Your Compassionate Productivity Companion</p>
+        <p>Loading your personalized productivity environment...</p>
+
+        <div class="feature-list">
+            <ul>
+                <li>✨ Smart task breakdown with gentle guidance</li>
+                <li>🎯 Time-boxed scheduling that respects your perfectionism</li>
+                <li>💝 "Good enough" mode to overcome paralysis</li>
+                <li>🧠 Behavioral insights with CBT-style reframing</li>
+                <li>🚀 Anti-procrastination techniques tailored for OCPD</li>
+            </ul>
+        </div>
+    </div>
+
+    <canvas id="ComposeTarget"></canvas>
+
+    <script src="TheKoormProject.js"></script>
+    <script>
+        // Hide loading screen when app is ready
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('ComposeTarget').style.display = 'block';
+            }, 2000);
+        });
+
+        // Handle errors gracefully
+        window.addEventListener('error', function(e) {
+            console.error('OCPD Assistant Error:', e);
+            document.getElementById('loading').innerHTML = `
+                <h1>🧠 OCPD Assistant</h1>
+                <p>Oops! Something went wrong loading the app.</p>
+                <p>Please refresh the page or try again later.</p>
+                <button onclick="location.reload()" style="
+                    background: white;
+                    color: #667eea;
+                    border: none;
+                    padding: 15px 30px;
+                    border-radius: 25px;
+                    font-size: 16px;
+                    cursor: pointer;
+                    margin-top: 20px;
+                ">Refresh Page</button>
+            `;
+        });
+    </script>
+</body>
+</html>
+
