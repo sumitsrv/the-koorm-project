@@ -96,56 +96,111 @@
         </div>
     </div>
 
-    <div id="error-message">
-        <h3>WebGL Not Supported</h3>
-        <p>Your browser doesn't support WebGL, which is required for this application. Please try using a modern browser like Chrome, Firefox, or Safari.</p>
+    <div id="error-message" style="display:none">
+        <h3 id="error-title">WebGL Not Supported</h3>
+        <p id="error-body">Your browser doesn't support WebGL, which is required for this application. Please try using a modern browser like Chrome, Firefox, or Safari.</p>
+        <pre id="error-details" style="white-space:pre-wrap; font-size:12px; background:rgba(0,0,0,0.25); padding:10px; border-radius:6px; max-width:80vw; overflow:auto; display:none"></pre>
+        <button id="retry-btn" style="margin-top:10px; padding:8px 14px; border:0; border-radius:4px; background:#667eea; color:#fff; cursor:pointer;">Retry Load</button>
     </div>
 
     <canvas id="ComposeTarget"></canvas>
 
     <script>
-        // Check WebGL support before loading the app
-        function checkWebGLSupport() {
-            try {
-                const canvas = document.createElement('canvas');
-                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-                return !!gl;
-            } catch (e) {
-                return false;
+        // Enhanced WebGL / runtime diagnostics & loader
+        function detectGL() {
+            const canvas = document.createElement('canvas');
+            const kinds = ['webgl2','webgl','experimental-webgl'];
+            const result = { supported: false, kind: null, details: {} };
+            for (const k of kinds) {
+                let ctx = null;
+                try { ctx = canvas.getContext(k); } catch(e) { /* ignore */ }
+                result.details[k] = !!ctx;
+                if (!result.supported && ctx) { result.supported = true; result.kind = k; }
             }
+            return result;
         }
 
-        // Enhanced error handling
-        window.addEventListener('error', function(e) {
-            console.error('Application error:', e.error);
-            if (e.error && e.error.message && e.error.message.includes('GL')) {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('error-message').style.display = 'block';
-            }
-        });
-
-        // Check WebGL support
-        if (!checkWebGLSupport()) {
+        function showError(title, body, details) {
             document.getElementById('loading').style.display = 'none';
+            document.getElementById('ComposeTarget').style.display = 'none';
+            const et = document.getElementById('error-title');
+            const eb = document.getElementById('error-body');
+            et.textContent = title;
+            eb.textContent = body;
+            const detEl = document.getElementById('error-details');
+            if (details) {
+                detEl.style.display = 'block';
+                detEl.textContent = details.substring(0, 8000);
+            } else {
+                detEl.style.display = 'none';
+            }
             document.getElementById('error-message').style.display = 'block';
-        } else {
-            // Load the application
+        }
+
+        const glInfo = detectGL();
+        console.log('[OCPD] WebGL detection:', glInfo);
+
+        // Always attempt load; only pre-block if clearly unsupported
+        if (!glInfo.supported) {
+            showError(
+                'WebGL Context Unavailable',
+                'No WebGL context could be created (tried WebGL2/WebGL/experimental). Ensure hardware acceleration is enabled and GPU drivers are current. You can still press Retry after fixing settings.',
+                JSON.stringify(glInfo, null, 2)
+            );
+        }
+
+        let scriptLoaded = false;
+        let mainInvoked = false;
+        let loadError = null;
+
+        function loadApp() {
+            document.getElementById('error-message').style.display = 'none';
+            document.getElementById('loading').style.display = 'flex';
+            const existing = document.getElementById('bundle-script');
+            if (existing) existing.remove();
             const script = document.createElement('script');
+            script.id = 'bundle-script';
             script.src = 'TheKoormProject.js';
-            script.onload = function() {
-                // Hide loading screen when app is ready
+            script.defer = true;
+            script.onload = () => {
+                scriptLoaded = true;
+                console.log('[OCPD] Bundle loaded');
+                // Heuristic: wait a tick for Kotlin/Compose to call main
                 setTimeout(() => {
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('ComposeTarget').style.display = 'block';
-                }, 1000);
+                    if (!mainInvoked) {
+                        // If main not invoked yet but GL supported, present a different error
+                        showError('Application Initialization Timeout', 'The JavaScript bundle loaded but the application did not start. Check console for runtime errors.', null);
+                    }
+                }, 4000);
             };
-            script.onerror = function() {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('error-message').style.display = 'block';
+            script.onerror = (e) => {
+                loadError = e;
+                showError('Bundle Load Failed', 'Failed to load application bundle (TheKoormProject.js). Verify server path or build output.', e && e.message ? e.message : String(e));
             };
             document.head.appendChild(script);
         }
+
+        // Expose hook for Kotlin main to call when ready
+        window.__OCPD_APP_STARTED__ = function() {
+            mainInvoked = true;
+            console.log('[OCPD] App signaled start');
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('ComposeTarget').style.display = 'block';
+        };
+
+        document.getElementById('retry-btn').addEventListener('click', () => {
+            loadApp();
+        });
+
+        window.addEventListener('error', function(e) {
+            console.error('[OCPD] window error:', e.error || e.message || e);
+            if (!mainInvoked) {
+                showError('Runtime Error Before Start', 'An error occurred before the app could start.', (e.error && (e.error.stack || e.error.message)) || (e.message) || String(e));
+            }
+        });
+
+        // Begin load (even if GL missing; user can adjust settings and retry)
+        loadApp();
     </script>
 </body>
 </html>
-

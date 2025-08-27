@@ -73,7 +73,7 @@ This is a **Kotlin Multiplatform** project using **Compose Multiplatform** for t
 
 3. **Run on Web**
    ```bash
-   ./gradlew jsRun
+   ./gradlew jsBrowserDevelopmentRun
    ```
 
 4. **Build for Android**
@@ -90,7 +90,21 @@ No additional setup required. The desktop application will be packaged as:
 - `.deb` for Linux
 
 #### Web/Browser
-The web version runs in any modern browser with JavaScript support.
+The web version runs in any modern browser with JavaScript + WebGL. A diagnostics loader now:
+- Detects WebGL2/WebGL support
+- Distinguishes bundle load failures vs. initialization timeouts vs. runtime errors
+- Provides a Retry button and error details (expandable)
+
+Web troubleshooting:
+1. Run dev server: `./gradlew jsBrowserDevelopmentRun` and open printed URL (not the raw file:// index.html).
+2. If you see an error panel:
+   - "WebGL Context Unavailable": Enable hardware acceleration (Chrome Settings > System) and update GPU drivers.
+   - "Bundle Load Failed": Ensure `TheKoormProject.js` is served (check Network tab 200 status).
+   - "Application Initialization Timeout": Check console for exceptions preventing `main()` execution.
+   - "Runtime Error Before Start": Expand details; likely an exception during Compose initialization.
+3. In DevTools console, run:
+   `(function(){let c=document.createElement('canvas');return ['webgl2','webgl','experimental-webgl'].map(k=>[k,!!c.getContext(k)]);})()` to verify context support.
+4. Retry after fixing environment by pressing the Retry button.
 
 #### Android
 1. Install Android Studio or Android SDK

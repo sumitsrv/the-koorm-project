@@ -1,14 +1,14 @@
 import java.io.File
 import java.util.Properties
-import com.android.build.gradle.LibraryExtension
+import com.android.build.api.dsl.ApplicationExtension
 import org.gradle.api.JavaVersion
 
 plugins {
-    kotlin("multiplatform") version "1.9.10"
-    kotlin("plugin.serialization") version "1.9.10"
-    id("org.jetbrains.compose") version "1.5.10"
+    kotlin("multiplatform") version "1.9.22"
+    kotlin("plugin.serialization") version "1.9.22"
+    id("org.jetbrains.compose") version "1.6.0"
     // Apply Android plugin only when SDK is available
-    id("com.android.library") version "8.1.4" apply false
+    id("com.android.application") version "8.1.4" apply false
     id("maven-publish")
 }
 
@@ -37,7 +37,7 @@ val enableAndroid: Boolean by lazy {
 }
 
 if (enableAndroid) {
-    apply(plugin = "com.android.library")
+    apply(plugin = "com.android.application")
 } else {
     logger.lifecycle("Android SDK not found; skipping Android plugin and target configuration.")
 }
@@ -129,7 +129,11 @@ kotlin {
 
         // Android (only if SDK is present)
         if (enableAndroid) {
-            val androidMain by getting
+            val androidMain by getting {
+                dependencies {
+                    implementation("androidx.activity:activity-compose:1.9.0")
+                }
+            }
         }
     }
 }
@@ -155,17 +159,27 @@ compose.desktop {
 
 // Configure Android only when SDK is present
 if (enableAndroid) {
-    extensions.configure<LibraryExtension>("android") {
+    extensions.configure<ApplicationExtension>("android") {
         namespace = "org.koorm.ocpd"
         compileSdk = 34
-
         defaultConfig {
+            applicationId = "org.koorm.ocpd"
             minSdk = 24
+            targetSdk = 34
+            versionCode = 1
+            versionName = "1.0"
         }
-
-        compileOptions {
-            sourceCompatibility = JavaVersion.VERSION_1_8
-            targetCompatibility = JavaVersion.VERSION_1_8
+        buildTypes {
+            maybeCreate("debug")
+            maybeCreate("release")
+        }
+        buildFeatures {
+            compose = true
+        }
+        packaging {
+            resources {
+                excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            }
         }
     }
 }
@@ -183,5 +197,21 @@ publishing {
                 }
             }
         }
+    }
+}
+
+// Custom Desktop run task because default desktopRun isn't picking up mainClass
+afterEvaluate {
+    val desktopRuntime = configurations.findByName("desktopRuntimeClasspath")
+    if (desktopRuntime != null) {
+        tasks.register<JavaExec>("runDesktop") {
+            group = "application"
+            description = "Run the Compose Desktop application"
+            mainClass.set("org.koorm.ocpd.DesktopMainKt")
+            classpath = files(tasks.named("desktopJar"), desktopRuntime)
+            dependsOn("desktopJar")
+        }
+    } else {
+        logger.lifecycle("desktopRuntimeClasspath configuration not found; skipping runDesktop task creation")
     }
 }
