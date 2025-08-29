@@ -10,37 +10,57 @@ OCPD Assistant is a specialized productivity application designed to help indivi
 
 ## 🌟 Features
 
-### Core Productivity Features
+Status Legend: ✅ Implemented (usable) • 🧪 Prototype/Partial • 📝 Planned
+
+The project’s mission is explicitly OCPD-aware with AI-assisted behavioral support. Several OCPD/AI foundations exist in code (data models + service stubs) but are not yet production-grade. Below is an accurate breakdown.
 - **Smart Task Management**: Create, organize, and track tasks with OCPD-aware features
-- **Intelligent Task Breakdown**: Automatically break down overwhelming tasks into manageable subtasks
-- **Perfectionism Control**: "Good enough" thresholds to combat perfectionist tendencies
-- **Time Tracking**: Pomodoro sessions and time management tools
-- **Priority Management**: Four-level priority system (Low, Medium, High, Urgent)
-- **Category Organization**: Organize tasks by Work, Personal, Health, Learning, and Social categories
-
-### OCPD-Specific Features
+### Core Productivity (✅ Implemented)
+- ✅ Smart Task Management – create, organize, track tasks
+- ✅ Intelligent Task Breakdown – heuristic pattern & generic step generation (TaskBreakdownService)
+- ✅ Perfectionism Control – GOOD_ENOUGH task status & encouragement messaging
+- ✅ Time Tracking (basic) – Pomodoro session creation & time blocks
+- ✅ Priority Management – multi-level priorities
+- ✅ Category Organization – Work / Personal / Health / Learning / Social
 - **Procrastination Trigger Tracking**: Identify and manage procrastination patterns
-- **Behavioral Insights**: AI-powered analysis of productivity patterns
-- **Gentle Notifications**: Compassionate reminder system that doesn't overwhelm
-- **Progress Celebration**: Recognition of achievements to combat perfectionist self-criticism
-- **Flexible Scheduling**: Accommodates the need for structure while allowing flexibility
-
-### Advanced Features
+### OCPD-Specific Support
+- ✅ Procrastination Trigger Tracking – CognitiveInsight records with procrastination reasons
+- 🧪 Behavioral Insights Engine – WeeklyInsightReport & recommendation heuristics (early logic only)
+- ✅ Gentle Notifications – tone-adjusted reminders & celebrations (NotificationService)
+- ✅ Progress Celebration – completion & “good enough” messaging
+- ✅ Flexible Scheduling (basic) – time block generation + buffer-aware scheduling (TimeManagementService)
 - **Cross-Platform Sync**: Available on Desktop, Web, Android, and iOS
-- **Data Persistence**: Secure local data storage with optional cloud sync
-- **AI Assistant Integration**: Intelligent suggestions and insights
-- **Customizable Interface**: Adapt the UI to your preferences and needs
-- **Analytics Dashboard**: Track your productivity patterns over time
+### AI & Adaptive Intelligence
+- 🧪 AI Assistant Integration – simulated breakdown, encouragement & productivity analysis (AIAssistantService stub)
+- 🧪 Mood Tracking (data layer) – MoodEntry model + recording API (no UI/analytics yet)
+- 📝 Adaptive Modeling Upgrade – real model integration & persistence-backed trends
 
-## 🏗️ Architecture
-
-This is a **Kotlin Multiplatform** project using **Compose Multiplatform** for the UI, enabling code sharing across all platforms while maintaining native performance and user experience.
-
-### Supported Platforms
-- 🖥️ **Desktop** (Windows, macOS, Linux)
-- 🌐 **Web** (JavaScript/Browser)
+### Data & Platform
+- ✅ Local Data Persistence – current shared/common storage layer (local only)
+- 📝 Cross-Platform Sync – planned optional cloud sync & conflict resolution
+- 📝 Analytics Dashboard – visual trends (completion rate, mood, procrastination reasons)
+- 📝 Professional Dashboard – export & therapeutic session summaries
 - 📱 **Android** (API 24+)
-- 🍎 **iOS** (iPhone/iPad)
+### Therapeutic / Well‑Being Extensions
+- 📝 Therapy Integration Tools – structured exports & cognitive reframes bundle
+- 📝 Stress Management Micro-Interventions – contextual coping prompts
+
+### Customization & UX
+- ✅ Customizable Interface – adaptable UI components, tone preferences
+- 📝 Advanced Personalization – AI-tuned nudging based on historical patterns
+
+### Feature Status Summary
+- Implemented: 12
+- Prototype / Partial: 3
+- Planned: 6
+- Total Tracked: 21
+- Overall Implemented Coverage: 12 / 21 (57%)
+
+Breakdown Integrity Notes:
+- “Prototype” means an internal heuristic or simulated implementation is present but not production-ready (e.g., no persistence, model inference, or UI polish).
+- Planned items are mission-critical for achieving full OCPD + AI guidance vision.
+- Update counts whenever changing any list item; keep Total Tracked accurate.
+
+> Next incremental milestone: graduate Behavioral Insights + AI Assistant from 🧪 to ✅ by adding persistence, UI surfacing, and evaluation hooks.
 
 ### Technology Stack
 - **Language**: Kotlin
@@ -224,7 +244,7 @@ This app is designed **by and for** people who understand the unique challenges 
 
 ### Professional Integration
 While this app provides valuable self-management tools, it's designed to complement, not replace, professional therapy and medical care.
-
+- 🧪 Behavioral insights engine maturation (expand heuristics, add persistence)
 ### Privacy First
 Your data is yours. All core features work offline, and any cloud features are optional with full user control.
 
@@ -232,8 +252,8 @@ Your data is yours. All core features work offline, and any cloud features are o
 
 - Built with love for the OCPD community
 - Inspired by evidence-based approaches to perfectionism management
-- Powered by Kotlin Multiplatform and Compose Multiplatform
-
+- 📝 Mood tracking UI & analytics (elevate from data layer)
+- 📝 Stress management micro-interventions
 ## 📄 License
 
 This project is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License - see the [LICENSE](LICENSE) file for details.
