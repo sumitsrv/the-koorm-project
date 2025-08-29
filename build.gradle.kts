@@ -1,14 +1,13 @@
 import java.io.File
 import java.util.Properties
 import com.android.build.api.dsl.ApplicationExtension
-import org.gradle.api.JavaVersion
 
 plugins {
     kotlin("multiplatform") version "1.9.22"
     kotlin("plugin.serialization") version "1.9.22"
     id("org.jetbrains.compose") version "1.6.0"
     // Apply Android plugin only when SDK is available
-    id("com.android.application") version "8.1.4" apply false
+    id("com.android.application") version "8.12.2" apply false
     id("maven-publish")
 }
 
@@ -65,7 +64,7 @@ kotlin {
         androidTarget {
             compilations.all {
                 kotlinOptions {
-                    jvmTarget = "1.8"
+                    jvmTarget = "17" // was 1.8 causing mismatch with Java 17
                 }
             }
         }
@@ -176,9 +175,40 @@ if (enableAndroid) {
         buildFeatures {
             compose = true
         }
+        composeOptions { // added to align Compose Compiler with Kotlin 1.9.22
+            kotlinCompilerExtensionVersion = "1.5.11"
+        }
         packaging {
             resources {
                 excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            }
+        }
+        compileOptions {
+            sourceCompatibility = JavaVersion.VERSION_17
+            targetCompatibility = JavaVersion.VERSION_17
+        }
+    }
+
+    // Convenience task to install & launch on a connected device/emulator
+    tasks.register("runAndroid") {
+        group = "application"
+        description = "Install and launch the Android debug app on a connected device/emulator"
+        dependsOn("installDebug")
+        doLast {
+            val adbCandidate = sequenceOf(
+                System.getenv("ADB"),
+                System.getenv("ANDROID_HOME")?.let { "$it/platform-tools/adb" },
+                System.getenv("ANDROID_SDK_ROOT")?.let { "$it/platform-tools/adb" },
+                "adb"
+            ).firstOrNull { it != null } ?: "adb"
+            val activity = "org.koorm.ocpd/.MainActivity"
+            println("Attempting to start $activity using $adbCandidate")
+            try {
+                project.exec { commandLine(adbCandidate, "shell", "am", "start", "-n", activity) }
+            } catch (e: Exception) {
+                println("Could not launch activity: ${e.message}")
+                println("If no devices are connected, start an emulator or plug in a device and run: $adbCandidate devices")
+                println("You can manually start the app from the launcher after installation.")
             }
         }
     }
