@@ -21,11 +21,13 @@ androidxActivityCompose = "1.9.3"
 androidxAppCompat = "1.7.0"
 androidxCoreKtx = "1.15.0"
 
-# Reserved for later phases (Phase 2+) — declared here so module bumps stay centralized.
+# Phase 2 — persistence
 sqldelight = "2.0.2"
+sqlcipherAndroid = "4.6.1"
+
+# Reserved for later phases — declared here so module bumps stay centralized.
 ktor = "3.0.1"
 koin = "4.0.0"
-sqlcipherAndroid = "4.6.1"
 sentry = "0.7.0"
 
 [libraries]
@@ -37,6 +39,16 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivityCompose" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidxAppCompat" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidxCoreKtx" }
+
+# SQLDelight — Phase 2 persistence
+sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqldelight" }
+sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
+sqldelight-driver-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
+sqldelight-driver-native = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
+sqldelight-driver-sqlite = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
+
+# SQLCipher (Android) — Phase 2 encryption-at-rest
+sqlcipher-android = { module = "net.zetetic:sqlcipher-android", version.ref = "sqlcipherAndroid" }
 
 # Build-logic accessors (used inside convention plugins to apply other plugins by id+version)
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
@@ -52,3 +64,4 @@ kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.
 compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
+sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }

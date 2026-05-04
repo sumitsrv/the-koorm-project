@@ -6,6 +6,8 @@ plugins {
 
 dependencies {
     implementation(project(":core-domain"))
+    implementation(project(":core-secure"))
+    implementation(project(":core-data"))
     implementation(project(":shared-ui"))
     implementation(compose.desktop.currentOs)
 }

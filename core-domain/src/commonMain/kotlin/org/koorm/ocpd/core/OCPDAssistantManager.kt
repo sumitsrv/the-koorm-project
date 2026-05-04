@@ -28,8 +28,10 @@ import org.koorm.ocpd.services.TimeManagementService
 /**
  * Top-level facade orchestrating tasks, schedules, mood, insights, and AI helpers.
  *
- * Phase 0 implementation: in-memory state plus best-effort JSON persistence via
- * [DataPersistenceService]. Phase 2 will replace storage with SQLDelight.
+ * In-memory state plus best-effort persistence via [DataPersistenceService].
+ * The persistence port is satisfied by either the legacy
+ * [org.koorm.ocpd.services.JsonDataPersistenceService] or the SQLDelight
+ * implementation in `:core-data` (`SqlDataPersistence`).
  */
 class OCPDAssistantManager(
     private val taskBreakdown: TaskBreakdownService = TaskBreakdownService(),

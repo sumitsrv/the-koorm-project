@@ -15,8 +15,8 @@ import org.koorm.ocpd.core.OCPDAssistantManager
 import org.koorm.ocpd.models.*
 
 @Composable
-fun OCPDAssistantApp() {
-    val assistant = remember { OCPDAssistantManager() }
+fun OCPDAssistantApp(manager: OCPDAssistantManager) {
+    val assistant = manager
     var selectedTab by remember { mutableStateOf(0) }
 
     MaterialTheme {

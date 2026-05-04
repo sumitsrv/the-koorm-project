@@ -23,6 +23,8 @@ dependencyResolutionManagement {
 rootProject.name = "TheKoormProject"
 
 include(":core-domain")
+include(":core-secure")
+include(":core-data")
 include(":shared-ui")
 include(":app-desktop")
 

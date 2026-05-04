@@ -1,0 +1,23 @@
+CREATE TABLE cognitive_insight (
+    id TEXT NOT NULL PRIMARY KEY,
+    timestamp_epoch_ms INTEGER NOT NULL,
+    trigger_thought TEXT NOT NULL,
+    emotional_state TEXT NOT NULL,
+    task_id TEXT,
+    procrastination_reason TEXT NOT NULL DEFAULT 'UNKNOWN',
+    reframe TEXT
+);
+
+CREATE INDEX cognitive_insight_timestamp ON cognitive_insight(timestamp_epoch_ms);
+
+selectAll:
+SELECT * FROM cognitive_insight ORDER BY timestamp_epoch_ms ASC;
+
+upsert:
+INSERT OR REPLACE INTO cognitive_insight(
+    id, timestamp_epoch_ms, trigger_thought, emotional_state, task_id,
+    procrastination_reason, reframe
+) VALUES (?, ?, ?, ?, ?, ?, ?);
+
+deleteAll:
+DELETE FROM cognitive_insight;
