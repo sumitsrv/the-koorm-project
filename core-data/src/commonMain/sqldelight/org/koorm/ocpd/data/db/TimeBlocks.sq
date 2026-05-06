@@ -1,0 +1,16 @@
+-- Schedule + time-block storage. Phase 2 lays the table down ahead of the
+-- Phase 6 reviewer suggestions that may rewrite blocks; queries are added
+-- when those features land.
+
+CREATE TABLE time_block (
+    id TEXT NOT NULL PRIMARY KEY,
+    schedule_date_iso TEXT NOT NULL,           -- ISO LocalDate (YYYY-MM-DD)
+    title TEXT NOT NULL,
+    start_time_iso TEXT NOT NULL,              -- ISO LocalTime (HH:MM[:SS])
+    end_time_iso TEXT NOT NULL,
+    type TEXT NOT NULL DEFAULT 'DEEP_WORK',
+    task_id TEXT,
+    notes TEXT NOT NULL DEFAULT ''
+);
+
+CREATE INDEX time_block_schedule_date ON time_block(schedule_date_iso);

@@ -1,0 +1,16 @@
+-- ConversationReviewer (Phase 6) outputs land here. Empty queries — wire up
+-- when the reviewer is implemented.
+
+CREATE TABLE review_suggestion (
+    id TEXT NOT NULL PRIMARY KEY,
+    conversation_id TEXT NOT NULL REFERENCES conversation(id) ON DELETE CASCADE,
+    kind TEXT NOT NULL,                  -- NEW_TASK | RESCHEDULE | PRIORITY_CHANGE | REMINDER | NONE
+    payload_json TEXT NOT NULL,
+    rationale TEXT NOT NULL DEFAULT '',
+    confidence REAL NOT NULL,
+    created_at_epoch_ms INTEGER NOT NULL,
+    status TEXT NOT NULL DEFAULT 'PENDING' -- PENDING | ACCEPTED | DISMISSED | EDITED
+);
+
+CREATE INDEX review_suggestion_conversation ON review_suggestion(conversation_id);
+CREATE INDEX review_suggestion_status ON review_suggestion(status);

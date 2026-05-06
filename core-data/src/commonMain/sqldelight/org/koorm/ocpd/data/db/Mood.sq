@@ -1,0 +1,19 @@
+CREATE TABLE mood_entry (
+    id TEXT NOT NULL PRIMARY KEY,
+    timestamp_epoch_ms INTEGER NOT NULL,
+    mood INTEGER NOT NULL,
+    energy INTEGER NOT NULL,
+    note TEXT NOT NULL DEFAULT ''
+);
+
+CREATE INDEX mood_entry_timestamp ON mood_entry(timestamp_epoch_ms);
+
+selectAll:
+SELECT * FROM mood_entry ORDER BY timestamp_epoch_ms ASC;
+
+upsert:
+INSERT OR REPLACE INTO mood_entry(id, timestamp_epoch_ms, mood, energy, note)
+VALUES (?, ?, ?, ?, ?);
+
+deleteAll:
+DELETE FROM mood_entry;
