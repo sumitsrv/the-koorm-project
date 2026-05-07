@@ -25,6 +25,7 @@ rootProject.name = "TheKoormProject"
 include(":core-domain")
 include(":core-secure")
 include(":core-data")
+include(":feature-audio")
 include(":shared-ui")
 include(":app-desktop")
 
